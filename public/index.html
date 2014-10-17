@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<style>
+	html, body {
+		height: 100%;
+		margin: 0;
+	}
+</style>
+<div id="terminal" style="position:relative; height:100%"></div>
+<script src="hterm_all.js"></script>
+<script>
+
+function Command(term) {
+	this.term = term;
+}
+
+Command.prototype.run = function(){
+	function send(message) {
+		ws.send(JSON.stringify(message));
+	}
+
+	var ws = new WebSocket(
+		(location.protocol === 'https:' ? 'wss' : 'ws') + '://' + location.host + '/ws'
+	);
+
+	ws.addEventListener('open', function() {
+		send({ init: {
+			type: 'xterm-256color',
+			rows: this.term.io.rowCount,
+			cols: this.term.io.columnCount
+		}});
+
+		this.term.io.onVTKeystroke = function(k){
+			send({ data: k });
+		}.bind(this);
+
+		this.term.io.onTerminalResize = function(cols, rows){
+			send({ resize: { cols: cols, rows: rows }});
+		}.bind(this);
+
+	}.bind(this));
+
+	ws.addEventListener('message', function(e) {
+		this.term.io.print(JSON.parse(e.data).data);
+	}.bind(this));
+}
+
+hterm.defaultStorage = {
+	addObserver: function(){
+		console.warn('TODO: addObserver');
+	},
+	getItems: function(keys, cb) {
+		console.warn('TODO: getItems');
+		cb({});
+	}
+};
+var t = new hterm.Terminal();
+t.decorate(document.getElementById('terminal'));
+
+t.runCommandClass(Command);
+
+</script>
