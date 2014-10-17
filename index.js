@@ -7,7 +7,6 @@ var wsServer = new ws.Server({
 	server: server,
 	path: '/ws'
 });
-const USER = require('pwuid')();
 
 var net = require('net');
 var controlSock = new net.Socket({
@@ -22,7 +21,8 @@ wsServer.on('connection', function(sock) {
 	sock.on('message', function(message) {
 		message = JSON.parse(message);
 		if (message.init) {
-			term = pty.spawn('login', ['-f', USER.name], {
+			term = pty.spawn(
+				process.env.SHELL ? process.env.SHELL : '/bin/sh', [], {
 				name: message.type,
 				rows: message.rows,
 				cols: message.cols,

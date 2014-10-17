@@ -2,7 +2,6 @@
   "dependencies": {
     "express": "^4.9",
     "pty.js": "git://github.com/chjj/pty.js",
-    "pwuid": "^1.0",
     "ws": "^0.4"
   }
 }
