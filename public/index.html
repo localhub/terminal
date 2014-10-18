@@ -29,7 +29,7 @@ Command.prototype.run = function(){
 			cols: this.term.io.columnCount
 		}});
 
-		this.term.io.onVTKeystroke = function(k){
+		this.term.io.sendString = this.term.io.onVTKeystroke = function(k){
 			send({ data: k });
 		}.bind(this);
 
